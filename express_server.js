@@ -2,12 +2,18 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
+const cookieParser = require("cookie-parser");
 const PORT = 4000;
 app.set("view engine", "ejs");
+app.use(cookieParser());
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
+function generateRandomString(data) {
+  const result = Math.random().toString(36).substr(2, 6);
+  return result;
+}
 app.get("/", (req, res) => {
   res.send("Hello");
 });
@@ -32,22 +38,36 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
+// create a new long URL using a form and add to urlDatabase
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("Ok");
+  // extract the information that was submitted with the form
+  const longURL = req.body.longURL;
+  console.log(longURL);
+  // we need to create a random key first, that will
+  // become the key of the new url we are about to
+  //save in our urlDatabase. In this case, it is called
+  // shortURL
+  let shortURL = Math.random().toString(36).substring(0, 8);
+  urlDatabase[shortURL] = longURL;
+  console.log(urlDatabase);
+  res.redirect("urls");
 });
-app.get("/urls/:id", (req, res) => {
+
+app.get("urls/:id", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: req.params.longURL,
   };
+
   res.render("urls_show", templateVars);
 });
-function generateRandomString() {
-  const result = Math.random().toString(36).substr(2, 6);
-  return result;
-}
 
+app.get("/u/:shortURL", (req, res) => {
+  // const longURL = ...
+  res.redirect(longURL);
+});
+
+console.log(generateRandomString("hell"));
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
