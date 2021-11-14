@@ -32,11 +32,21 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
+            <td>
+              <form action="/urls/<%= url %>" method="get">
+                <input type="submit" value="edit" />
+              </form>
+              <form action="/urls/<%= url %>/delete" method="post">
+                <input type="submit" value="delete" />
+              </form>
+            </td>
           </tr>
           <% } %>
         </tbody>
       </table>
     </main>
+
+    <form method="POST" action="/urls/9sm5xK/delete">...</form>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

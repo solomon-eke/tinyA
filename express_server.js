@@ -33,6 +33,7 @@ app.get("/fetch", (req, res) => {
 });
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
+
   res.render("urls_index", templateVars);
 });
 app.get("/urls/new", (req, res) => {
@@ -42,24 +43,42 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   // extract the information that was submitted with the form
   const longURL = req.body.longURL;
-  console.log(longURL);
+  console.log(`this is:${longURL}`);
   // we need to create a random key first, that will
   // become the key of the new url we are about to
   //save in our urlDatabase. In this case, it is called
   // shortURL
-  let shortURL = Math.random().toString(36).substring(0, 8);
-  urlDatabase[shortURL] = longURL;
+  let id = Math.random().toString(36).substring(0, 8);
+  urlDatabase[id] = longURL;
   console.log(urlDatabase);
-  res.redirect("urls");
+  res.redirect("/urls/:id");
 });
 
-app.get("urls/:id", (req, res) => {
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: req.params.longURL,
-  };
+app.get("/urls/:id", (req, res) => {
+  const urlId = req.params.id;
+  console.log(`this is id:${urlId}`);
+  const templateVars = { urlId: urlId, longUrl: urlDatabase[urlId] };
 
   res.render("urls_show", templateVars);
+});
+app.post("urls/:id", (req, res) => {
+  const urlId = req.params.id;
+  // extract the long url
+  const longURL = req.body.longURL;
+  // update the db
+  urlDatabase[urlId].longURL = longURL;
+  // redirect
+  res.redirect("/urls");
+});
+app.post("/urls/:id/delete", (req, res) => {
+  // extract the id
+  const urlId = req.params.id;
+
+  // delete from an object
+  delete urlDatabase[urlId];
+
+  // redirect
+  res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
